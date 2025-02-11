@@ -1,51 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 import Todo from "./components/todo";
-
-
+import Form from "./components/Form";
+import FilterButton from "./components/FilterButton";
+import { nanoid } from "nanoid";
 
 function App(props) {
-  const tasksRemaining = props.tasks.filter((task) => !task.completed).length;
-  const taskList = props.tasks.map((task) => (
-    <Todo id={task.id} name={task.name} completed={task.completed} />
+  function toggleTaskCompleted(id) {
+    const updatedTasks = tasks.map((task) => {
+      if (id === task.id) {
+        return { ...task, completed: !task.completed };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+  }
+
+  function deleteTask(id) { 
+    const remainingTasks = tasks.filter(task => id !== task.id);
+    setTasks(remainingTasks);
+  }
+
+  const [tasks, setTasks] = useState(props.tasks);
+
+  function addTask(name) {
+    const newTask = { id: `Todo-${nanoid()}`, name: name, completed: false };
+    setTasks([...tasks, newTask]);
+  }
+
+  const taskList = tasks.map((task) => (
+    <Todo
+      id={task.id}
+      name={task.name}
+      completed={task.completed}
+      key={task.id}
+      toggleTaskCompleted={toggleTaskCompleted}
+      deleteTask={deleteTask}
+    />
   ));
+
+  const taskNoun = taskList.length !== 1 ? "tasks" : "task";
+
   return (
     <div className="todoapp stack-large">
-      <h2>To-Do Matic</h2>
-      <form action="submit" className="label-wrapper">
-        <label htmlFor="new-Todo-input" className="label__lg</label>">
-          What needs to be done?
-        </label>
+      <h1>To-Do Matic</h1>
 
-        <input type="text" id="new-Todo-input" className="input input__lg" />
-        <button type="submit" className="btn btn__primary btn__lg">
-          <span className="visually-hidden">Add</span>
-          <span>+</span>
-        </button>
-      </form>
+      <Form addTask={addTask} />
+
       <div className="filters btn-group stack-exception">
-        <button type="button" className="btn toggle-btn" aria-pressed="true">
-          <span className="visually-hidden">Show</span>
-          <span>All</span>
-          <span className="visually-hidden">Tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show</span>
-          <span>Active</span>
-          <span className="visually-hidden">Tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show</span>
-          <span>Completed</span>
-          <span className="visually-hidden">Tasks</span>
-        </button>
+        <FilterButton />
+        <FilterButton />
+        <FilterButton />
       </div>
-      <h2 id="list-heading">{tasksRemaining} tasks remaining</h2>
+      <h2 id="list-heading">
+        {tasks.length} {taskNoun} remaining
+      </h2>
       <ul
         role="list"
         className="todo-list stack-large stack-exception"
         aria-labelledby="list-heading">
         {taskList}
-
       </ul>
     </div>
   );
