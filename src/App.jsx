@@ -5,6 +5,9 @@ import FilterButton from "./components/FilterButton";
 import { nanoid } from "nanoid";
 
 function App(props) {
+
+  
+
   function toggleTaskCompleted(id) {
     const updatedTasks = tasks.map((task) => {
       if (id === task.id) {
@@ -15,8 +18,8 @@ function App(props) {
     setTasks(updatedTasks);
   }
 
-  function deleteTask(id) { 
-    const remainingTasks = tasks.filter(task => id !== task.id);
+  function deleteTask(id) {
+    const remainingTasks = tasks.filter((task) => id !== task.id);
     setTasks(remainingTasks);
   }
 
@@ -27,6 +30,18 @@ function App(props) {
     setTasks([...tasks, newTask]);
   }
 
+  function editTask(id, newName) {
+    const editedTaskList = tasks.map((task) => {
+      if (id === task.id) {
+        return { ...task, name: newName };
+      }
+      return task;
+    });
+    setTasks(editedTaskList);
+  }
+
+
+
   const taskList = tasks.map((task) => (
     <Todo
       id={task.id}
@@ -35,6 +50,7 @@ function App(props) {
       key={task.id}
       toggleTaskCompleted={toggleTaskCompleted}
       deleteTask={deleteTask}
+      editTask={editTask}
     />
   ));
 
