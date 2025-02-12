@@ -2,7 +2,7 @@ import { useState } from "react";
 
 function Todo(props) {
   const [isEditing, setEditing] = useState(false);
-  const [newName, setNewName] = useState("");
+  const [newName, setNewName] = useState(props.name);
 
   function handleChange(event) {
     setNewName(event.target.value);
@@ -17,18 +17,27 @@ function Todo(props) {
 
   const editTemplate = (
     <form className="stack-small" onSubmit={handleSubmit}>
-      <div className="form-group" >
+      <div className="form-group">
         <label className="todo-label" htmlFor={props.id}>
           New name for {props.name}
         </label>
-        <input id={props.id} className="todo-text" type="text" value={newName} onChange={handleChange}/>
+        <input
+          id={props.id}
+          className="todo-text"
+          type="text"
+          value={newName}
+          onChange={handleChange}
+        />
       </div>
       <div className="btn-group">
-        <button type="button" className="btn todo-cancel" onClick={() => setEditing(false)}>
+        <button
+          type="button"
+          className="btn todo-cancel"
+          onClick={() => setEditing(false)}>
           Cancel
           <span className="visually-hidden">renaming {props.name}</span>
         </button>
-        <button type="submit" className="btn btn__primary todo-edit" >
+        <button type="submit" className="btn btn__primary todo-edit">
           Save
           <span className="visually-hidden">new name for {props.name}</span>
         </button>
@@ -37,7 +46,7 @@ function Todo(props) {
   );
 
   const viewTemplate = (
-    <div className="stack-small" >
+    <div className="stack-small">
       <div className="c-cb">
         <input
           id={props.id}

@@ -4,9 +4,17 @@ import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 import { nanoid } from "nanoid";
 
-function App(props) {
+const FILTER_MAP = {
+  All: () => true,
+  Active: (task) => !task.completed,
+  Completed: (task) => task.completed,
+};
 
-  
+const FILTER_NAMES = Object.keys(FILTER_MAP);
+
+function App(props) {
+  const [tasks, setTasks] = useState(props.tasks);
+  const [filter, setFilter] = useState("All");
 
   function toggleTaskCompleted(id) {
     const updatedTasks = tasks.map((task) => {
@@ -23,8 +31,6 @@ function App(props) {
     setTasks(remainingTasks);
   }
 
-  const [tasks, setTasks] = useState(props.tasks);
-
   function addTask(name) {
     const newTask = { id: `Todo-${nanoid()}`, name: name, completed: false };
     setTasks([...tasks, newTask]);
@@ -40,33 +46,36 @@ function App(props) {
     setTasks(editedTaskList);
   }
 
-
-
-  const taskList = tasks.map((task) => (
-    <Todo
-      id={task.id}
-      name={task.name}
-      completed={task.completed}
-      key={task.id}
-      toggleTaskCompleted={toggleTaskCompleted}
-      deleteTask={deleteTask}
-      editTask={editTask}
+  const filterList = FILTER_NAMES.map((name) => (
+    <FilterButton
+      key={name}
+      name={name}
+      isPressed={name === filter}
+      setFilter={setFilter}
     />
   ));
 
-  const taskNoun = taskList.length !== 1 ? "tasks" : "task";
+  const taskList = tasks
+    .filter(FILTER_MAP[filter])
+    .map((task) => (
+      <Todo
+        id={task.id}
+        name={task.name}
+        completed={task.completed}
+        key={task.id}
+        toggleTaskCompleted={toggleTaskCompleted}
+        deleteTask={deleteTask}
+        editTask={editTask}
+      />
+    ));
+
+  const taskNoun = tasks.length !== 1 ? "tasks" : "task";
 
   return (
     <div className="todoapp stack-large">
       <h1>To-Do Matic</h1>
-
       <Form addTask={addTask} />
-
-      <div className="filters btn-group stack-exception">
-        <FilterButton />
-        <FilterButton />
-        <FilterButton />
-      </div>
+      <div className="filters btn-group stack-exception">{filterList}</div>
       <h2 id="list-heading">
         {tasks.length} {taskNoun} remaining
       </h2>
